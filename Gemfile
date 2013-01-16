@@ -4,6 +4,19 @@ gem 'rails', '3.2.9'
 gem 'pg'
 gem 'jquery-rails'
 gem "thin"
+gem 'jquery-rails'
+gem "whenever"
+gem "js-routes", :git => "https://github.com/railsware/js-routes"
+gem "will_paginate"
+gem 'paperclip'
+gem 'json'
+gem 'oauth2'
+gem 'omniauth'
+gem 'omniauth-vkontakte'
+gem 'localtunnel'
+gem 'vkontakte_api'
+gem 'vk_api'
+gem 'russian'
 
 # Bundle edge Rails instead:
 # gem 'rails', :git => 'git://github.com/rails/rails.git'

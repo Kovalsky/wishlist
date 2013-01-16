@@ -8,7 +8,7 @@ development:
   database: db/wishlist_development
   encoding: unicode
   username: postgres
-  password:
+  password: postgres
   pool: 5
   host: localhost
 
@@ -20,7 +20,7 @@ test:
   database: db/wishlist_test
   encoding: unicode
   username: postgres
-  password:
+  password: postgres
   pool: 5
   host: localhost
 
