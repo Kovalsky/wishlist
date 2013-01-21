@@ -1,14 +1,64 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Wishlist</title>
-  <%= stylesheet_link_tag    "application", :media => "all" %>
+  <title>Wishlist Railsware project | <%= @title %></title>
+  <%= stylesheet_link_tag "application", :media => "all" %>
   <%= javascript_include_tag "application" %>
   <%= csrf_meta_tags %>
 </head>
 <body>
-
+<div class="wrapper">
+<header class="mbl">
+	<div class="row">
+        <div class="col4of6">
+	        <div class="row">
+  		        <div class="col1of4">
+                 <%= link_to image_tag("logo.png", :border => 0), root_path, :class=>"logo" %>
+       	        </div>
+   	 	        <div class="col3of4">
+			        <nav class="h2">
+                    <%= link_to "Добавить желание", search_path, :class => top_menu_class(:add_wish) %>
+    			    <%= link_to "Мои желания", wishes_path, :class => top_menu_class(:list_wishes)  %>
+   			    	<%= link_to "Друзья", friends_path, :class => top_menu_class(:friends) %>
+    			    <%= link_to "Резерв", reserve_index_path, :class=> top_menu_class(:reserve) %>
+			        </nav>
+  		        </div>
+	        </div>
+        </div>
+        <div class="col2of6">
+          <div class="avatar">
+            <div class="name h3">
+              <%if current_user%>
+              <%= image_tag current_user.vk_avatar_url, :class=>"photo" %>
+              <%= current_user.name %>
+            </div>
+              <%= link_to image_tag("exit.png", :border => 0), {:controller => "landing", :action => "logout"},:class=>"exit" %>
+              <%else%>
+                      <%= link_to 'Login', 'auth/vkontakte', :class => "popup", :"data-width" => 600, :"data-height" => 400%>
+              <%end%>
+           </div>
+        </div>
+	</div>
+  <div class="polosa"></div>
+</header>
 <%= yield %>
+<div class="pusher"></div>
+</div>
+<footer>
+  <div class="polosaF"></div>
+  <div class="row">
+    <div class="col1of2">
+        <div>&copy; 2012 Майвиш</div>
+    </div>
+    <div class="col1of2">
+      <div class="contacts">
+        <div class="adminmywish"></div>
+		<%= link_to image_tag("vkontakte.png", :border => 0), "http://www.vk.com/",:class=>"vkontakte" %>
+		<%= link_to image_tag("twitter.png", :border => 0), "http://www.twitter.com/" %>
+      </div>
+    </div>
+  </div>
+</footer>
 
 </body>
 </html>

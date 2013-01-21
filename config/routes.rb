@@ -1,4 +1,27 @@
 Wishlist::Application.routes.draw do
+
+  resources :wishes
+  resources :friends
+
+  get "friends/index"
+  get "profile/edit"
+
+  match '/home',  :to => 'landing#home_page'
+  match '/auth/vkontakte/callback', :to => 'landing#login'
+  match '/logout', :to => 'landing#logout'
+  match '/friends_whose_birthday_is_in_one_week', :to => 'friends#bdate_in_1_week', :as => 'friends_one_week'
+  match '/friends_whose_birthday_is_in_two_weeks', :to => 'friends#bdate_in_2_weeks', :as => 'friends_two_weeks'
+  match '/friends_whose_birthday_is_in_one_month', :to => 'friends#bdate_in_1_month', :as => 'friends_one_month'
+  match '/friends_whose_birthday_is_unknown', :to => 'friends#bdate_unknown', :as => 'friends_unknown'
+  match '/search', :to => 'wishes#search', :as => 'search'
+  match '/new', :to => 'wishes#new'
+  match '/reserve', :to => 'reserve#index', :as => 'reserve_index'
+  match '/reserve/:id/add', :to => 'reserve#add_reserve', :as => 'add_reserve'
+  match '/reserve/:id/delete', :to => 'reserve#delete_reserve', :as => 'delete_reserve'
+  match '/local_login', :to => 'landing#local_login', :as => 'local_login'
+  match '/local_login/:id', :to => 'landing#local_login_as', :as => 'local_user'
+
+  root :to => 'landing#home_page'
   # The priority is based upon order of creation:
   # first created -> highest priority.
 
