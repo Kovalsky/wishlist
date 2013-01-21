@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130116202538) do
+ActiveRecord::Schema.define(:version => 20130121154831) do
 
   create_table "friendships", :force => true do |t|
     t.integer  "person_id"
@@ -28,8 +28,12 @@ ActiveRecord::Schema.define(:version => 20130116202538) do
     t.boolean  "is_user"
     t.string   "vk_avatar_url"
     t.string   "role"
-    t.datetime "created_at",    :null => false
-    t.datetime "updated_at",    :null => false
+    t.datetime "created_at",          :null => false
+    t.datetime "updated_at",          :null => false
+    t.string   "avatar_file_name"
+    t.string   "avatar_content_type"
+    t.integer  "avatar_file_size"
+    t.datetime "avatar_updated_at"
   end
 
   create_table "reservations", :force => true do |t|

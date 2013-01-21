@@ -10,3 +10,17 @@ class Wish < ActiveRecord::Base
   validates :owner_id, :presence =>  true
   validates :rating, :presence => true, :inclusion => {:in => 1..5}
 end
+# == Schema Information
+#
+# Table name: wishes
+#
+#  id          :integer         not null, primary key
+#  name        :string(255)
+#  url         :string(255)
+#  description :text
+#  owner_id    :integer
+#  rating      :integer
+#  created_at  :datetime        not null
+#  updated_at  :datetime        not null
+#
+
