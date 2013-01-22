@@ -1,3 +1,24 @@
+# == Schema Information
+#
+# Table name: people
+#
+#  id                  :integer         not null, primary key
+#  name                :string(255)
+#  birthday            :datetime
+#  vk_id               :string(255)
+#  privacy_type        :string(255)
+#  is_user             :boolean
+#  vk_avatar_url       :string(255)
+#  role                :string(255)
+#  created_at          :datetime        not null
+#  updated_at          :datetime        not null
+#  avatar_file_name    :string(255)
+#  avatar_content_type :string(255)
+#  avatar_file_size    :integer
+#  avatar_updated_at   :datetime
+#
+require "open-uri"
+
 class Person < ActiveRecord::Base
   attr_accessible :birthday, :is_user, :name, :privacy_type, :role,
                   :vk_avatar_url, :vk_id, :updated_at, :avatar
@@ -12,12 +33,11 @@ class Person < ActiveRecord::Base
   has_attached_file :avatar, :styles => { :big => "150x150", :medium => "100x100>", :small => "30x30>" }
 
   def self.find_for_vkontakte_oauth access_token, friends_hashes, current_user_hash
-    token = access_token.credentials.token 
     if person = Person.where(:vk_id => current_user_hash[:uid].to_s, :is_user => true).first
        person
     else
 	  if person = Person.where(:vk_id => current_user_hash[:uid].to_s, :is_user => false).first
-	    person.update_attributes(:avatar => open(current_user_hash[:photo_medium_rec]), :is_user => true)
+	    person.update_attributes(:avatar => open(current_user_hash[:photo_max]), :is_user => true)
 		Person.create_friends friends_hashes, person
 		person
 	  else
@@ -32,8 +52,8 @@ class Person < ActiveRecord::Base
 	     						      end
     								end,
     								:vk_id => access_token.uid.to_s)
-    	person.update_attributes(:avatar => open(current_user_hash[:photo_medium_rec]),
-    							 :vk_avatar_url => current_user_hash[:photo_medium_rec])
+    	person.update_attributes(:avatar => open(current_user_hash[:photo_max]),
+    							 :vk_avatar_url => current_user_hash[:photo_max])
 		Person.create_friends friends_hashes, person
 		person
 	  end 
@@ -54,7 +74,7 @@ class Person < ActiveRecord::Base
 	     						     DateTime.strptime(hash[:bdate], '%d.%m')
 	     						   end 
 	     						 end,
-	     						 :vk_id => hash[:uid].to_s, :vk_avatar_url => hash[:photo_medium_rec])
+	     						 :vk_id => hash[:uid].to_s, :vk_avatar_url => hash[:photo_max])
 	  end
 	  Friendship.create!(:person_id => person.id, :friend_id => friend.id )
     end
@@ -80,7 +100,7 @@ class Person < ActiveRecord::Base
 	     						     DateTime.strptime(hash[:bdate], '%d.%m')
 	     						   end 
 	     						 end,
-	     						 :vk_id => hash[:uid].to_s, :vk_avatar_url => hash[:photo_medium_rec])
+	     						 :vk_id => hash[:uid].to_s, :vk_avatar_url => hash[:photo_max])
 	     Friendship.create!(:person_id => person.id, :friend_id => friend.id )
 	  else
 		 friend.update_attributes(:name =>hash[:first_name] + " " + hash[:last_name], :birthday => 
@@ -93,28 +113,9 @@ class Person < ActiveRecord::Base
 	     						     DateTime.strptime(hash[:bdate], '%d.%m')
 	     						   end 
 	     						 end,
-	     						 :vk_avatar_url => hash[:photo_medium_rec], :updated_at => DateTime.now)
+	     						 :vk_avatar_url => hash[:photo_max], :updated_at => DateTime.now)
 	  end
     end
   end
 end
-# == Schema Information
-#
-# Table name: people
-#
-#  id                  :integer         not null, primary key
-#  name                :string(255)
-#  birthday            :datetime
-#  vk_id               :string(255)
-#  privacy_type        :string(255)
-#  is_user             :boolean
-#  vk_avatar_url       :string(255)
-#  role                :string(255)
-#  created_at          :datetime        not null
-#  updated_at          :datetime        not null
-#  avatar_file_name    :string(255)
-#  avatar_content_type :string(255)
-#  avatar_file_size    :integer
-#  avatar_updated_at   :datetime
-#
 
