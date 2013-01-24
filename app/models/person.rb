@@ -43,7 +43,7 @@ class Person < ActiveRecord::Base
 	    else
       	person = Person.create!(is_user: true,
                                 name: access_token.info.name,
-                                birthday: bdate_convert(access_token.extra.raw_info.bdate),
+                                birthday: Person.bdate_convert(access_token.extra.raw_info.bdate),
                                 vk_id: access_token.uid.to_s)
 
       	person.update_attributes(avatar: open(user_hash[:photo_max]),
@@ -62,7 +62,7 @@ class Person < ActiveRecord::Base
          full_name = hash[:first_name] << " " << hash[:last_name]
 	       friend = Person.create!(is_user: false,
                                  name: full_name,
-                                 birthday: bdate_convert(hash[:bdate]),
+                                 birthday: Person.bdate_convert(hash[:bdate]),
 	       						             vk_id: hash[:uid].to_s,
                                  vk_avatar_url: hash[:photo_max])
 	    end
@@ -82,22 +82,20 @@ class Person < ActiveRecord::Base
 	    if friend == nil
 	       friend = Person.create!(is_user: false,
                                  name: full_name,
-                                 birthday: bdate_convert(hash[:bdate]),
+                                 birthday: Person.bdate_convert(hash[:bdate]),
 	       						             vk_id: hash[:uid].to_s,
                                  vk_avatar_url: hash[:photo_max])
 	       Friendship.create!(person_id: person.id, friend_id: friend.id)
 	    else
 		   friend.update_attributes(name: full_name,
-                                birthday: bdate_convert(hash[:bdate]),
+                                birthday: Person.bdate_convert(hash[:bdate]),
 	       						            vk_avatar_url: hash[:photo_max],
                                 updated_at: DateTime.now)
 	    end
     end
   end
 
-  private
-
-  def bdate_convert(bdate_hash)
+  def self.bdate_convert(bdate_hash)
     if bdate_hash == nil
       bdate = nil
     else
