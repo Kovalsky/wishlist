@@ -32,90 +32,83 @@ class Person < ActiveRecord::Base
 
   has_attached_file :avatar, :styles => { :big => "150x150", :medium => "100x100>", :small => "30x30>" }
 
-  def self.find_for_vkontakte_oauth access_token, friends_hashes, current_user_hash
-    if person = Person.where(:vk_id => current_user_hash[:uid].to_s, :is_user => true).first
-       person
+  def self.find_for_vkontakte_oauth(access_token, friends_hashes, user_hash)
+    if person = Person.where(vk_id: user_hash[:uid].to_s, is_user: true).first
+      person
     else
-	  if person = Person.where(:vk_id => current_user_hash[:uid].to_s, :is_user => false).first
-	    person.update_attributes(:avatar => open(current_user_hash[:photo_max]), :is_user => true)
-		Person.create_friends friends_hashes, person
-		person
-	  else
-    		person = Person.create!(:is_user => true, :name => access_token.info.name, :birthday =>
-    								if access_token.extra.raw_info.bdate == nil
-    								  nil
-    								else
-	     						      if access_token.extra.raw_info.bdate.length > 5
-	     						        DateTime.strptime(access_token.extra.raw_info.bdate, '%d.%m.%Y')
-	     						      else
-	     						        DateTime.strptime(access_token.extra.raw_info.bdate, '%d.%m')
-	     						      end
-    								end,
-    								:vk_id => access_token.uid.to_s)
-    	person.update_attributes(:avatar => open(current_user_hash[:photo_max]),
-    							 :vk_avatar_url => current_user_hash[:photo_max])
-		Person.create_friends friends_hashes, person
-		person
-	  end 
+	    if person = Person.where(vk_id: user_hash[:uid].to_s, is_user: false).first
+	      person.update_attributes(avatar: open(user_hash[:photo_max]), is_user: true)
+		    Person.create_friends(friends_hashes, person)
+		    person
+	    else
+      	person = Person.create!(is_user: true,
+                                name: access_token.info.name,
+                                birthday: bdate_convert(access_token.extra.raw_info.bdate),
+                                vk_id: access_token.uid.to_s)
+
+      	person.update_attributes(avatar: open(user_hash[:photo_max]),
+      	              					 vk_avatar_url: user_hash[:photo_max])
+
+		    Person.create_friends(friends_hashes, person)
+		    person
+	    end 
     end
   end 
 
-  def self.create_friends friends_hashes, person
+  def self.create_friends(friends_hashes, person)
     friends_hashes.each do |hash|
-      friend = Person.where(:vk_id => hash[:uid].to_s).first
-	  if friend == nil
-	     friend = Person.create!(:is_user => false, :name =>hash[:first_name] + " " + hash[:last_name], :birthday => 
-	     						 if hash[:bdate] == nil
-	     						   nil 
-	     						 else
-	     						   if hash[:bdate].length > 5
-	     						     DateTime.strptime(hash[:bdate], '%d.%m.%Y')
-	     						   else
-	     						     DateTime.strptime(hash[:bdate], '%d.%m')
-	     						   end 
-	     						 end,
-	     						 :vk_id => hash[:uid].to_s, :vk_avatar_url => hash[:photo_max])
-	  end
-	  Friendship.create!(:person_id => person.id, :friend_id => friend.id )
+      friend = Person.where(vk_id: hash[:uid].to_s).first
+	    if friend == nil
+         full_name = hash[:first_name] << " " << hash[:last_name]
+	       friend = Person.create!(is_user: false,
+                                 name: full_name,
+                                 birthday: bdate_convert(hash[:bdate]),
+	       						             vk_id: hash[:uid].to_s,
+                                 vk_avatar_url: hash[:photo_max])
+	    end
+	    Friendship.create!(person_id: person.id, friend_id: friend.id)
     end
   end
   
-  def self.update_friends friends_hashes, person
+  def self.update_friends(friends_hashes, person)
     friends_in_db = person.friendships.collect {|f| f.friend}
     friends_in_db.each do |f|
-      if !(friends_hashes.include? f)
-         Friendship.where(:person_id => person.id, :friend_id => f.id ).destroy
-      end
+         Friendship.where(person_id: person.id, friend_id: f.id).destroy unless friends_hashes.include? f
     end
+
     friends_hashes.each do |hash|
-      friend = Person.where(:vk_id => hash[:uid].to_s).first
-	  if friend == nil
-	     friend = Person.create!(:is_user => false, :name =>hash[:first_name] + " " + hash[:last_name], :birthday => 
-	     						 if hash[:bdate] == nil
-	     						   nil 
-	     						 else
-	     						   if hash[:bdate].length > 5
-	     						     DateTime.strptime(hash[:bdate], '%d.%m.%Y')
-	     						   else
-	     						     DateTime.strptime(hash[:bdate], '%d.%m')
-	     						   end 
-	     						 end,
-	     						 :vk_id => hash[:uid].to_s, :vk_avatar_url => hash[:photo_max])
-	     Friendship.create!(:person_id => person.id, :friend_id => friend.id )
-	  else
-		 friend.update_attributes(:name =>hash[:first_name] + " " + hash[:last_name], :birthday => 
-	     						 if hash[:bdate] == nil
-	     						   nil 
-	     						 else
-	     						   if hash[:bdate].length > 5
-	     						     DateTime.strptime(hash[:bdate], '%d.%m.%Y')
-	     						   else
-	     						     DateTime.strptime(hash[:bdate], '%d.%m')
-	     						   end 
-	     						 end,
-	     						 :vk_avatar_url => hash[:photo_max], :updated_at => DateTime.now)
-	  end
+      friend = Person.where(vk_id: hash[:uid].to_s).first
+      full_name = hash[:first_name] << " " << hash[:last_name]
+	    if friend == nil
+	       friend = Person.create!(is_user: false,
+                                 name: full_name,
+                                 birthday: bdate_convert(hash[:bdate]),
+	       						             vk_id: hash[:uid].to_s,
+                                 vk_avatar_url: hash[:photo_max])
+	       Friendship.create!(person_id: person.id, friend_id: friend.id)
+	    else
+		   friend.update_attributes(name: full_name,
+                                birthday: bdate_convert(hash[:bdate]),
+	       						            vk_avatar_url: hash[:photo_max],
+                                updated_at: DateTime.now)
+	    end
     end
   end
+
+  private
+
+  def bdate_convert(bdate_hash)
+    if bdate_hash == nil
+      bdate = nil
+    else
+	  	if bdate_hash.length > 5
+	  	  bdate = DateTime.strptime(bdate_hash, '%d.%m.%Y')
+	  	else
+	  	  bdate = DateTime.strptime(bdate_hash, '%d.%m')
+	  	end
+    end
+    bdate
+  end
+
 end
 
