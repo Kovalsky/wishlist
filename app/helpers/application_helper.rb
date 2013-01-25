@@ -29,9 +29,8 @@ module ApplicationHelper
     end
   end
 
-
-
-
-
-
+  def title
+    base_title = 'MyWish'
+    @title.nil? ? base_title : "#{base_title} | #{@title}"
+  end
 end
