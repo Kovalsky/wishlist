@@ -1,0 +1,20 @@
+<%= render 'layouts/friend_filters' %>
+
+<% if (@friends.size != 0)  %>
+<% @friends.each do |f| %>
+    <div class="friends">
+        <div class="friendsAvatars"><%= link_to image_tag(f.vk_avatar_url), friend_path(f)%></div>
+        <div class="friendsName"><%= f.name %></div>
+      <% if f.is_user == true %>
+          <%= image_tag("UserInSystem18.png",:class=>"userInSystem" ) %>
+      <%= f.wishes.size - current_user.friendships.where(:friend_id => f.id).first.wish_num unless 
+      (f.wishes.size - current_user.friendships.where(:friend_id => f.id).first.wish_num) == 0 %>
+      <% end %>
+    </div>
+<% end %>
+<% else %>
+    <p>friendlist is empty</p>
+<% end %>
+
+
+

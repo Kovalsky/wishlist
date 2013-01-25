@@ -108,5 +108,58 @@ class Person < ActiveRecord::Base
     bdate
   end
 
+  def self.friends_1_week(current_user)
+    d_now = DateTime.now
+    friends = current_user.friends
+    friends_1_week = friends.collect do |v|
+      if v.birthday != nil 
+        v if (v.birthday.month == d_now.month)&&
+             (v.birthday.day - d_now.day <= 7)&&
+             (v.birthday.day - d_now.day >= 0) 
+      end 
+    end
+    friends_1_week.delete(nil)
+    friends_1_week = friends_1_week.sort_by { |hsh| [hsh[:is_user] ? 0:1]}  
+    friends_1_week
+  end
+
+  def self.friends_2_week(current_user)
+    d_now = DateTime.now
+    friends = current_user.friends
+    friends_2_week = friends.collect do |v|
+      if v.birthday != nil 
+        v if (v.birthday.month == d_now.month)&&
+             (v.birthday.day - d_now.day <= 14)&&
+             (v.birthday.day - d_now.day >= 0) 
+      end 
+    end
+    friends_2_week.delete(nil)
+    friends_2_week = friends_2_week.sort_by { |hsh| [hsh[:is_user] ? 0:1]}  
+    friends_2_week
+  end
+
+  def self.friends_1_month(current_user)
+    d_now = DateTime.now
+    friends = current_user.friends
+    friends_1_month = friends.collect do |v|
+      if v.birthday != nil 
+        v if (v.birthday.month == d_now.month)&&
+             (v.birthday.day - d_now.day <= 14)&&
+             (v.birthday.day - d_now.day >= 0) 
+      end 
+    end
+    friends_1_month.delete(nil)
+    friends_1_month = friends_1_month.sort_by { |hsh| [hsh[:is_user] ? 0:1]}  
+    friends_1_month
+  end
+
+  def self.friends_unknown(current_user)
+    d_now = DateTime.now
+    friends = current_user.friends
+    friends_unknown = friends.collect { |v| v if v.birthday == nil  }
+    friends_unknown.delete(nil)
+    friends_unknown = friends_unknown.sort_by { |hsh| [hsh[:is_user] ? 0:1]}
+    friends_unknown
+  end
 end
 

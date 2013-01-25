@@ -1,0 +1,15 @@
+<%= render 'layouts/friend_filters' %>
+
+<% if (@friends_1_month.size != 0)  %>
+<% @friends_1_month.each do |f| %>
+        <div class="friends">
+          <div class="friendsAvatars"><%= link_to image_tag(f.vk_avatar_url), friend_path(f)%></div>
+          <div class="friendsName"><%= f.name %></div>
+          <% if f.is_user == true %>
+              <%= image_tag("UserInSystem18.png",:class=>"userInSystem" ) %>
+          <% end %>
+        </div>
+<% end %>
+<% else %>
+    <p>friendlist is empty</p>
+<% end %>
