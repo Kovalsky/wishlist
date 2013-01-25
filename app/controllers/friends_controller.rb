@@ -1,6 +1,7 @@
 # encoding: utf-8
 class FriendsController < ApplicationController
   before_filter :set_current_user
+  before_filter :correct_friend, :only => :show
 
   protected
 
@@ -8,6 +9,11 @@ class FriendsController < ApplicationController
     if (current_user == nil)
       render 'landing/not_login'
     end
+  end
+
+  def correct_friend
+    friend = current_user.friends.where(id: params[:id]).first
+    redirect_to friends_path if friend == nil
   end
 
   public
