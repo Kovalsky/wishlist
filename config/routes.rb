@@ -1,11 +1,11 @@
 Wishlist::Application.routes.draw do
 
   resources :wishes
-  resources :friends
 
-  get "friends/index"
   get "profile/edit"
 
+  match '/friends', :to => 'friends#index'
+  match '/friends/:id', :to => 'friends#show', :as => 'friend'
   match '/home',  :to => 'landing#home_page'
   match '/auth/vkontakte/callback', :to => 'landing#login'
   match '/logout', :to => 'landing#logout'
