@@ -1,0 +1,21 @@
+<div class="row">
+  <div class="col1of2">
+    <div>
+      <%= image_tag(@wish.image, :border => 0)  %>
+    </div>
+  </div>
+  <div class="col1of2">
+    <div class="form">
+      <%=  form_for @wish, :url => {:action => "update"} do |f| %>
+          <div class="mbs"><label>Название:</label><%= f.text_field :name %><!--<span id="error_name"></span>--><br></div>
+
+          <%= render 'layouts/wish_form', :f => f %>
+
+          <%= link_to "Удалить", wish_path(@wish),:class =>"cancel", :method => :delete %>
+          <%= f.hidden_field :owner_id, :value => current_user.id %><!--<span id="error_url"></span>-->
+      <% end %>
+     </div>
+   </div>
+</div>
+
+

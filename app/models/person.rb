@@ -143,9 +143,11 @@ class Person < ActiveRecord::Base
     friends = current_user.friends
     friends_1_month = friends.collect do |v|
       if v.birthday != nil 
-        v if (v.birthday.month == d_now.month)&&
-             (v.birthday.day - d_now.day <= 14)&&
-             (v.birthday.day - d_now.day >= 0) 
+        v if ((v.birthday.month == d_now.month)&&
+             (v.birthday.day - d_now.day >= 0)&&
+             (v.birthday.day - d_now.day >= 0))|| 
+             ((v.birthday.month == d_now.month + 1)&&
+             (d_now.day - v.birthday.day >= 0))
       end 
     end
     friends_1_month.delete(nil)

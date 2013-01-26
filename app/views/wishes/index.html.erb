@@ -1,0 +1,10 @@
+<h3 style="background-color: #7fffd4; " ><%= flash[:success] %> </h3>
+<%  if (@wishes.size != 0)  %>
+<div id="container">
+    <%@wishes.each do |w| %>
+    <%= link_to image_tag(w.image, :border => 0, :class => 'item'), edit_wish_path(w) %>
+    <% end %>
+</div>
+<% else %>
+    <p>Список желаний пуст</p>
+<% end %>
